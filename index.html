@@ -543,7 +543,8 @@
 
     input[type="text"],
     input[type="number"],
-    input[type="password"] {
+    input[type="password"],
+    input:not([type]) {
       background: var(--bg);
       border: 1px solid var(--panel-border);
       border-radius: 8px;
@@ -1031,8 +1032,8 @@
           '<div class="header-star">&#9733;</div>' +
           '<h2>Assemble Your Shelf</h2>' +
           '<p>Enter reader names and a shared password to begin.</p>' +
-          '<div class="form-group"><label>First Reader</label><input id="nameA" placeholder="Hero name" maxlength="20"></div>' +
-          '<div class="form-group"><label>Second Reader</label><input id="nameB" placeholder="Hero name" maxlength="20"></div>' +
+          '<div class="form-group"><label>First Reader</label><input type="text" id="nameA" placeholder="Hero name" maxlength="20"></div>' +
+          '<div class="form-group"><label>Second Reader</label><input type="text" id="nameB" placeholder="Hero name" maxlength="20"></div>' +
           '<div class="form-group"><label>Shared Password</label><input id="pw1" type="password" placeholder="Password" maxlength="60"></div>' +
           '<div class="form-group"><label>Confirm Password</label><input id="pw2" type="password" placeholder="Confirm" maxlength="60"></div>' +
           '<p id="setupError" class="auth-error"></p>' +
