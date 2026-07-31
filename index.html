@@ -455,6 +455,17 @@
       border-color: var(--marvel-red);
       box-shadow: 0 0 0 3px var(--marvel-red-bg);
     }
+    /* ── Override Chrome autofill white background ── */
+    input:-webkit-autofill,
+    input:-webkit-autofill:hover,
+    input:-webkit-autofill:focus,
+    input:-webkit-autofill:active {
+      -webkit-box-shadow: 0 0 0px 1000px var(--bg) inset !important;
+      -webkit-text-fill-color: var(--text-bright) !important;
+      caret-color: var(--text-bright);
+      border-color: var(--panel-border) !important;
+      transition: background-color 5000s ease-in-out 0s;
+    }
     .form-row { display: flex; gap: 12px; }
     .form-row .form-group { flex: 1; }
 
