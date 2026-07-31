@@ -327,9 +327,10 @@
 
     .progress-header .percentage {
       font-weight: 700;
-      font-size: 18px;
+      font-size: 26px;
       font-family: 'Bangers', cursive, sans-serif;
       letter-spacing: 0.05em;
+      line-height: 1;
     }
 
     .book-card.person-A .progress-header .percentage {
@@ -1229,7 +1230,7 @@
         }
 
         var pct = calcPct(book.page, book.total);
-        var hasProgress = book.page != null && book.total;
+        var hasProgress = book.page != null && book.page !== '' && book.total;
 
         return '<div class="book-card ' + pClass + '">' +
           '<div>' +
@@ -1254,8 +1255,8 @@
       }
 
       function calcPct(page, total) {
-        if (!page || !total || total <= 0) return 0;
-        var pct = Math.round((page / total) * 100);
+        if (page == null || page === '' || !total || total <= 0) return 0;
+        var pct = Math.round((parseFloat(page) / parseFloat(total)) * 100);
         return Math.max(0, Math.min(100, pct));
       }
 
