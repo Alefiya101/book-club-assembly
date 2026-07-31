@@ -460,11 +460,12 @@
     input:-webkit-autofill:hover,
     input:-webkit-autofill:focus,
     input:-webkit-autofill:active {
-      -webkit-box-shadow: 0 0 0px 1000px var(--bg) inset !important;
-      -webkit-text-fill-color: var(--text-bright) !important;
-      caret-color: var(--text-bright);
-      border-color: var(--panel-border) !important;
-      transition: background-color 5000s ease-in-out 0s;
+      -webkit-box-shadow: 0 0 0px 1000px #0b0e1b inset !important;
+      box-shadow: 0 0 0px 1000px #0b0e1b inset !important;
+      -webkit-text-fill-color: #f0f3ff !important;
+      caret-color: #f0f3ff;
+      border-color: #232c4f !important;
+      transition: background-color 9999s ease 0s, color 9999s ease 0s;
     }
     .form-row { display: flex; gap: 12px; }
     .form-row .form-group { flex: 1; }
