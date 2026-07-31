@@ -1,993 +1,1198 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1">
-<title>Book Club Assemble</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
-<style>
-  :root {
-    --bg: #090d16;
-    --panel: #131822;
-    --panel-sub: #1a202c;
-    --panel-border: #242c3d;
-    --text-bright: #f3f4f6;
-    --text-muted: #9ca3af;
-    --text-dim: #6b7280;
-    
-    --person-a: #3b82f6;
-    --person-a-bg: rgba(59, 130, 246, 0.12);
-    
-    --person-b: #f59e0b;
-    --person-b-bg: rgba(245, 158, 11, 0.12);
-    
-    font-size: 16px;
-  }
-  
-  * { box-sizing: border-box; }
-  html, body { margin: 0; padding: 0; }
-  body {
-    background-color: var(--bg);
-    background-image: radial-gradient(circle at 50% 0%, rgba(59, 130, 246, 0.07) 0%, transparent 50%);
-    color: var(--text-bright);
-    font-family: 'Plus Jakarta Sans', sans-serif;
-    min-height: 100vh;
-    -webkit-font-smoothing: antialiased;
-  }
-  
-  #app {
-    max-width: 640px;
-    margin: 0 auto;
-    padding: 20px 16px 60px;
-  }
-  
-  .mono { font-family: 'JetBrains Mono', monospace; }
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1">
+  <title>Book Club Assemble</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@500;600;700&family=Exo+2:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;700&display=swap"
+    rel="stylesheet">
+  <style>
+    :root {
+      --bg: #07080d;
+      --bg2: #0d0f18;
+      --panel: #111420;
+      --panel-sub: #181c2e;
+      --panel-border: #252a3e;
+      --panel-border-bright: #3a4060;
+      --text-bright: #f0f2ff;
+      --text-muted: #8b92b8;
+      --text-dim: #555d82;
 
-  /* Hide annoying number input spinners */
-  input[type=number]::-webkit-inner-spin-button, 
-  input[type=number]::-webkit-outer-spin-button { 
-    -webkit-appearance: none; 
-    margin: 0; 
-  }
-  input[type=number] {
-    -moz-appearance: textfield;
-  }
-  
+      --marvel-red: #ED1D24;
+      --marvel-red-dark: #b01419;
+      --marvel-red-glow: rgba(237, 29, 36, 0.25);
+      --marvel-red-bg: rgba(237, 29, 36, 0.1);
+      --gold: #f5c842;
+      --gold-dim: rgba(245, 200, 66, 0.15);
+
+      --person-a: #ED1D24;
+      --person-a-bg: rgba(237, 29, 36, 0.1);
+      --person-b: #f5c842;
+      --person-b-bg: rgba(245, 200, 66, 0.1);
+
+      font-size: 16px;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html,
+    body {
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      background-color: var(--bg);
+      background-image:
+        radial-gradient(ellipse 80% 40% at 50% -10%, rgba(237, 29, 36, 0.12) 0%, transparent 70%),
+        url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='60' height='104' viewBox='0 0 60 104'%3E%3Cpath d='M30 2 L58 17 L58 47 L30 62 L2 47 L2 17 Z' fill='none' stroke='rgba(255,255,255,0.018)' stroke-width='1'/%3E%3C/svg%3E");
+      color: var(--text-bright);
+      font-family: 'Exo 2', sans-serif;
+      min-height: 100vh;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    #app {
+      max-width: 660px;
+      margin: 0 auto;
+      padding: 20px 16px 80px;
+    }
+
+    .mono {
+      font-family: 'JetBrains Mono', monospace;
+    }
+
+    .rajdhani {
+      font-family: 'Rajdhani', sans-serif;
+    }
+  </style>
+
+  /* ── Scrollbar ── */
+  ::-webkit-scrollbar { width: 6px; }
+  ::-webkit-scrollbar-track { background: var(--bg2); }
+  ::-webkit-scrollbar-thumb { background: var(--panel-border-bright); border-radius: 3px; }
+
+  /* ── Number input spinners ── */
+  input[type=number]::-webkit-inner-spin-button,
+  input[type=number]::-webkit-outer-spin-button { -webkit-appearance: none; margin: 0; }
+  input[type=number] { -moz-appearance: textfield; appearance: textfield; }
+
+  /* ── Sync Banner ── */
   .sync-banner {
-    background: rgba(239, 68, 68, 0.12);
-    border: 1px solid rgba(239, 68, 68, 0.25);
-    color: #f87171;
-    border-radius: 8px;
-    padding: 8px 12px;
-    font-size: 12px;
-    text-align: center;
-    margin-bottom: 16px;
+  background: rgba(237,29,36,0.1);
+  border: 1px solid rgba(237,29,36,0.3);
+  color: #ff6b6f;
+  border-radius: 6px;
+  padding: 8px 14px;
+  font-size: 12px;
+  text-align: center;
+  margin-bottom: 16px;
+  letter-spacing: 0.04em;
   }
 
-  /* Header */
-  header.top {
-    text-align: center;
-    margin-bottom: 24px;
-    padding-bottom: 16px;
-    border-bottom: 1px solid var(--panel-border);
+  /* ── Loading ── */
+  .loading-spinner {
+  color: var(--text-dim);
+  font-size: 13px;
+  text-align: center;
+  padding: 80px 0;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  font-family: 'Rajdhani', sans-serif;
   }
+  .loading-spinner::before {
+  content: '⬡ ';
+  color: var(--marvel-red);
+  }
+
+  /* ── Header ── */
+  header.top {
+  text-align: center;
+  margin-bottom: 32px;
+  padding-bottom: 20px;
+  position: relative;
+  }
+  header.top::after {
+  content: '';
+  position: absolute;
+  bottom: 0; left: 50%;
+  transform: translateX(-50%);
+  width: 120px; height: 2px;
+  background: linear-gradient(90deg, transparent, var(--marvel-red), transparent);
+  }
+  .header-logo {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  margin-bottom: 4px;
+  }
+  .logo-shield {
+  width: 36px; height: 36px;
+  position: relative;
+  flex-shrink: 0;
+  }
+  .logo-shield svg { width: 100%; height: 100%; }
   header.top h1 {
-    font-size: 24px;
-    font-weight: 800;
-    margin: 0 0 2px;
-    letter-spacing: -0.02em;
-    color: #ffffff;
+  font-family: 'Rajdhani', sans-serif;
+  font-size: 30px;
+  font-weight: 700;
+  margin: 0;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  background: linear-gradient(135deg, #fff 0%, #e0e4ff 50%, var(--gold) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
   }
   header.top .sub {
-    font-size: 12px;
-    color: var(--text-muted);
-    font-weight: 500;
+  font-size: 11px;
+  color: var(--text-dim);
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  font-family: 'Rajdhani', sans-serif;
+  font-weight: 600;
+  margin-top: 2px;
   }
   header.top .header-actions {
-    display: flex;
-    justify-content: center;
-    gap: 12px;
-    margin-top: 8px;
+  display: flex;
+  justify-content: center;
+  gap: 8px;
+  margin-top: 12px;
   }
   header.top button.link-btn {
-    background: none;
-    border: none;
-    color: var(--text-dim);
-    font-size: 12px;
-    cursor: pointer;
-    padding: 2px 6px;
+  background: var(--panel-sub);
+  border: 1px solid var(--panel-border);
+  color: var(--text-muted);
+  font-size: 11px;
+  font-family: 'Rajdhani', sans-serif;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  cursor: pointer;
+  padding: 4px 12px;
+  border-radius: 4px;
+  transition: border-color 0.2s, color 0.2s;
   }
   header.top button.link-btn:hover {
-    color: var(--text-muted);
+  border-color: var(--marvel-red);
+  color: var(--marvel-red);
   }
 
-  /* Sections */
-  section { margin-bottom: 26px; }
+  /* ── Section titles ── */
+  section { margin-bottom: 28px; }
   h2.section-title {
-    font-size: 12px;
-    font-weight: 700;
-    text-transform: uppercase;
-    letter-spacing: 0.08em;
-    color: var(--text-dim);
-    margin: 0 0 12px;
+  font-family: 'Rajdhani', sans-serif;
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.2em;
+  color: var(--text-dim);
+  margin: 0 0 14px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  }
+  h2.section-title::before {
+  content: '';
+  display: block;
+  width: 14px; height: 2px;
+  background: var(--marvel-red);
+  flex-shrink: 0;
   }
 
-  /* Bookshelf Cards */
+  /* ── Book Cards ── */
   .shelf {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
-    gap: 14px;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(270px, 1fr));
+  gap: 14px;
   }
-  
+
   .book-card {
-    background: var(--panel);
-    border: 1px solid var(--panel-border);
-    border-radius: 10px;
-    padding: 16px;
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
+  background: var(--panel);
+  border: 1px solid var(--panel-border);
+  border-radius: 10px;
+  padding: 18px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  position: relative;
+  overflow: hidden;
+  transition: border-color 0.25s, box-shadow 0.25s;
   }
-  
-  .book-card.person-A { border-top: 2.5px solid var(--person-a); }
-  .book-card.person-B { border-top: 2.5px solid var(--person-b); }
-  
+  .book-card::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 3px;
+  border-radius: 10px 10px 0 0;
+  }
+  .book-card.person-A::before { background: linear-gradient(90deg, var(--marvel-red-dark), var(--marvel-red)); }
+  .book-card.person-B::before { background: linear-gradient(90deg, #c49a10, var(--gold)); }
+  .book-card:hover {
+  border-color: var(--panel-border-bright);
+  box-shadow: 0 0 24px rgba(0,0,0,0.4);
+  }
+  /* corner hex accent */
+  .book-card::after {
+  content: '⬡';
+  position: absolute;
+  bottom: 10px; right: 12px;
+  font-size: 60px;
+  line-height: 1;
+  opacity: 0.03;
+  pointer-events: none;
+  color: white;
+  }
+
   .reader-badge {
-    display: inline-block;
-    font-size: 11px;
-    font-weight: 700;
-    padding: 3px 8px;
-    border-radius: 4px;
-    margin-bottom: 10px;
-    width: fit-content;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-family: 'Rajdhani', sans-serif;
+  font-size: 10px;
+  font-weight: 700;
+  padding: 3px 10px;
+  border-radius: 3px;
+  margin-bottom: 12px;
+  width: fit-content;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
   }
-  .book-card.person-A .reader-badge { background: var(--person-a-bg); color: var(--person-a); }
-  .book-card.person-B .reader-badge { background: var(--person-b-bg); color: var(--person-b); }
-  
+  .book-card.person-A .reader-badge { background: var(--person-a-bg); color: var(--person-a); border: 1px solid
+  rgba(237,29,36,0.2); }
+  .book-card.person-B .reader-badge { background: var(--person-b-bg); color: var(--person-b); border: 1px solid
+  rgba(245,200,66,0.2); }
+
   .book-card h3 {
-    font-size: 16px;
-    font-weight: 700;
-    margin: 0 0 2px;
-    color: var(--text-bright);
+  font-family: 'Exo 2', sans-serif;
+  font-size: 16px;
+  font-weight: 700;
+  margin: 0 0 3px;
+  color: var(--text-bright);
+  line-height: 1.3;
   }
   .book-card .author {
-    font-size: 12px;
-    color: var(--text-muted);
-    margin: 0 0 14px;
+  font-size: 12px;
+  color: var(--text-muted);
+  margin: 0 0 16px;
   }
   .book-card .empty-state {
-    color: var(--text-dim);
-    font-size: 13px;
-    margin-bottom: 12px;
+  color: var(--text-dim);
+  font-size: 13px;
+  margin-bottom: 12px;
   }
 
-  /* Progress Display */
+  /* ── Progress ── */
   .progress-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: baseline;
-    font-size: 12.5px;
-    margin-bottom: 6px;
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  font-size: 12px;
+  margin-bottom: 7px;
   }
   .progress-header .pages { color: var(--text-muted); }
   .progress-header .pages strong { color: var(--text-bright); }
-  .progress-header .percentage { font-weight: 700; font-size: 14px; }
+  .progress-header .percentage {
+  font-weight: 700;
+  font-size: 15px;
+  font-family: 'Rajdhani', sans-serif;
+  letter-spacing: 0.03em;
+  }
   .book-card.person-A .progress-header .percentage { color: var(--person-a); }
   .book-card.person-B .progress-header .percentage { color: var(--person-b); }
 
   .meter-bar {
-    height: 6px;
-    background: var(--panel-sub);
-    border-radius: 3px;
-    overflow: hidden;
-    margin-bottom: 14px;
+  height: 5px;
+  background: var(--panel-sub);
+  border-radius: 3px;
+  overflow: hidden;
+  margin-bottom: 16px;
+  border: 1px solid var(--panel-border);
   }
   .meter-fill {
-    height: 100%;
-    border-radius: 3px;
-    transition: width 0.4s ease;
+  height: 100%;
+  border-radius: 3px;
+  transition: width 0.5s cubic-bezier(0.4,0,0.2,1);
+  position: relative;
   }
-  .book-card.person-A .meter-fill { background: var(--person-a); }
-  .book-card.person-B .meter-fill { background: var(--person-b); }
+  .book-card.person-A .meter-fill { background: linear-gradient(90deg, var(--marvel-red-dark), var(--marvel-red)); }
+  .book-card.person-B .meter-fill { background: linear-gradient(90deg, #c49a10, var(--gold)); }
+  .meter-fill::after {
+  content: '';
+  position: absolute;
+  top: 0; right: 0;
+  width: 6px; height: 100%;
+  background: rgba(255,255,255,0.4);
+  border-radius: 3px;
+  filter: blur(2px);
+  }
 
   .btn-update {
-    background: var(--panel-sub);
-    border: 1px solid var(--panel-border);
-    color: var(--text-bright);
-    padding: 7px 10px;
-    border-radius: 6px;
-    font-size: 12px;
-    font-weight: 600;
-    cursor: pointer;
-    width: 100%;
-    text-align: center;
+  background: var(--panel-sub);
+  border: 1px solid var(--panel-border);
+  color: var(--text-bright);
+  padding: 8px 12px;
+  border-radius: 6px;
+  font-size: 12px;
+  font-family: 'Rajdhani', sans-serif;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  cursor: pointer;
+  width: 100%;
+  text-align: center;
+  transition: all 0.2s;
   }
-  .btn-update:hover { background: #222a3a; }
+  .book-card.person-A .btn-update:hover { background: var(--marvel-red-bg); border-color: var(--marvel-red); color:
+  var(--marvel-red); }
+  .book-card.person-B .btn-update:hover { background: var(--gold-dim); border-color: var(--gold); color: var(--gold); }
 
   .card-footer-links {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-top: 8px;
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  margin-top: 8px;
   }
   .sub-link {
-    background: none;
-    border: none;
-    color: var(--text-dim);
-    font-size: 11px;
-    cursor: pointer;
-    padding: 0;
+  background: none;
+  border: none;
+  color: var(--text-dim);
+  font-size: 11px;
+  font-family: 'Rajdhani', sans-serif;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  cursor: pointer;
+  padding: 0;
+  text-transform: uppercase;
+  transition: color 0.2s;
   }
   .sub-link:hover { color: var(--text-muted); }
 
-  /* Compact Edit Form */
-  .edit-form-panel {
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
-  }
-  .form-group {
-    display: flex;
-    flex-direction: column;
-    gap: 3px;
-  }
+  /* ── Forms ── */
+  .edit-form-panel { display: flex; flex-direction: column; gap: 10px; }
+  .form-group { display: flex; flex-direction: column; gap: 4px; }
   .form-group label {
-    font-size: 10.5px;
-    font-weight: 700;
-    text-transform: uppercase;
-    color: var(--text-dim);
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  color: var(--text-dim);
+  font-family: 'Rajdhani', sans-serif;
   }
   input[type="text"], input[type="number"], input[type="password"], textarea {
-    background: var(--panel-sub);
-    border: 1px solid var(--panel-border);
-    border-radius: 6px;
-    color: var(--text-bright);
-    font-family: inherit;
-    font-size: 13.5px;
-    padding: 7px 10px;
-    width: 100%;
+  background: var(--bg2);
+  border: 1px solid var(--panel-border);
+  border-radius: 6px;
+  color: var(--text-bright);
+  font-family: 'Exo 2', sans-serif;
+  font-size: 13.5px;
+  padding: 8px 11px;
+  width: 100%;
+  transition: border-color 0.2s, box-shadow 0.2s;
   }
   input:focus, textarea:focus {
-    outline: none;
-    border-color: #3b82f6;
+  outline: none;
+  border-color: var(--marvel-red);
+  box-shadow: 0 0 0 3px rgba(237,29,36,0.15);
   }
-  .form-row { display: flex; gap: 8px; }
+  .form-row { display: flex; gap: 10px; }
   .form-row .form-group { flex: 1; }
 
-  .action-buttons {
-    display: flex;
-    gap: 6px;
-    margin-top: 4px;
-  }
+  .action-buttons { display: flex; gap: 8px; margin-top: 4px; }
   .btn {
-    font-family: inherit;
-    font-size: 12px;
-    font-weight: 600;
-    padding: 7px 12px;
-    border-radius: 6px;
-    border: none;
-    cursor: pointer;
+  font-family: 'Rajdhani', sans-serif;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  padding: 8px 14px;
+  border-radius: 6px;
+  border: none;
+  cursor: pointer;
+  transition: all 0.2s;
   }
-  .btn-primary { background: #3b82f6; color: #ffffff; flex: 1; }
-  .btn-secondary { background: var(--panel-sub); color: var(--text-muted); border: 1px solid var(--panel-border); }
+  .btn-primary {
+  background: linear-gradient(135deg, var(--marvel-red-dark), var(--marvel-red));
+  color: #ffffff;
+  flex: 1;
+  box-shadow: 0 2px 12px rgba(237,29,36,0.3);
+  }
+  .btn-primary:hover {
+  background: linear-gradient(135deg, var(--marvel-red), #ff3a40);
+  box-shadow: 0 4px 18px rgba(237,29,36,0.45);
+  transform: translateY(-1px);
+  }
+  .btn-primary:active { transform: translateY(0); }
+  .btn-secondary {
+  background: var(--panel-sub);
+  color: var(--text-muted);
+  border: 1px solid var(--panel-border);
+  }
+  .btn-secondary:hover { border-color: var(--panel-border-bright); color: var(--text-bright); }
 
-  /* Compose Section */
+  /* ── Compose ── */
   .compose-card {
-    background: var(--panel);
-    border: 1px solid var(--panel-border);
-    border-radius: 10px;
-    padding: 14px;
+  background: var(--panel);
+  border: 1px solid var(--panel-border);
+  border-radius: 10px;
+  padding: 16px;
+  transition: border-color 0.2s;
   }
+  .compose-card:focus-within { border-color: var(--panel-border-bright); }
   .compose-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 10px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
   }
   .type-selector {
-    display: flex;
-    background: var(--panel-sub);
-    padding: 2px;
-    border-radius: 6px;
-    border: 1px solid var(--panel-border);
+  display: flex;
+  background: var(--bg2);
+  padding: 3px;
+  border-radius: 6px;
+  border: 1px solid var(--panel-border);
+  gap: 2px;
   }
   .type-selector button {
-    background: none;
-    border: none;
-    color: var(--text-dim);
-    font-size: 11.5px;
-    font-weight: 600;
-    padding: 3px 10px;
-    border-radius: 4px;
-    cursor: pointer;
+  background: none;
+  border: none;
+  color: var(--text-dim);
+  font-size: 11px;
+  font-family: 'Rajdhani', sans-serif;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  padding: 4px 12px;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: all 0.15s;
   }
   .type-selector button.active {
-    background: #222a38;
-    color: var(--text-bright);
+  background: var(--marvel-red);
+  color: #fff;
+  box-shadow: 0 1px 6px rgba(237,29,36,0.4);
   }
   .book-tag {
-    font-size: 11.5px;
-    color: var(--text-dim);
+  font-size: 11px;
+  color: var(--text-dim);
+  font-family: 'Rajdhani', sans-serif;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  max-width: 180px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
   }
   .compose-card textarea {
-    min-height: 60px;
-    resize: vertical;
-    margin-bottom: 10px;
+  min-height: 70px;
+  resize: vertical;
+  margin-bottom: 12px;
+  background: var(--bg2);
   }
 
-  /* Feed List */
+  /* ── Feed ── */
   .feed-list { display: flex; flex-direction: column; gap: 10px; }
   .feed-empty {
-    text-align: center;
-    color: var(--text-dim);
-    font-size: 12.5px;
-    padding: 24px 0;
-    border: 1px dashed var(--panel-border);
-    border-radius: 8px;
+  text-align: center;
+  color: var(--text-dim);
+  font-size: 12px;
+  font-family: 'Rajdhani', sans-serif;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  padding: 30px 0;
+  border: 1px dashed var(--panel-border);
+  border-radius: 8px;
   }
   .feed-item {
-    background: var(--panel);
-    border: 1px solid var(--panel-border);
-    border-radius: 8px;
-    padding: 12px 14px;
+  background: var(--panel);
+  border: 1px solid var(--panel-border);
+  border-radius: 8px;
+  padding: 13px 16px;
+  transition: border-color 0.2s, transform 0.2s;
+  animation: fadeSlideIn 0.3s ease;
   }
+  @keyframes fadeSlideIn {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
+  }
+  .feed-item:hover { border-color: var(--panel-border-bright); transform: translateX(2px); }
   .feed-item.person-A { border-left: 3px solid var(--person-a); }
   .feed-item.person-B { border-left: 3px solid var(--person-b); }
-  
+
   .feed-item .item-meta {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    margin-bottom: 6px;
-    font-size: 11.5px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 7px;
+  font-size: 11px;
   }
-  .feed-item .reader-name { font-weight: 700; }
+  .feed-item .reader-name {
+  font-weight: 800;
+  font-family: 'Rajdhani', sans-serif;
+  font-size: 12px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  }
   .feed-item.person-A .reader-name { color: var(--person-a); }
   .feed-item.person-B .reader-name { color: var(--person-b); }
-  
-  .feed-item .date-str { color: var(--text-dim); font-size: 10.5px; }
-  .feed-item .book-name { color: var(--text-muted); font-style: italic; }
-  .feed-item .body-text { font-size: 13.5px; line-height: 1.45; color: var(--text-bright); margin: 0; }
-  .feed-item.quote .body-text { font-style: italic; color: #e5e7eb; border-left: 2px solid var(--panel-border); padding-left: 8px; }
 
-  /* Auth Screens */
+  .feed-item .date-str { color: var(--text-dim); font-size: 10px; }
+  .feed-item .book-name { color: var(--text-muted); font-style: italic; }
+  .feed-item .body-text { font-size: 13.5px; line-height: 1.5; color: var(--text-bright); margin: 0; }
+  .feed-item.quote .body-text {
+  font-style: italic;
+  color: #c8ccf0;
+  padding-left: 12px;
+  border-left: 2px solid var(--panel-border-bright);
+  }
+  .feed-item.quote .body-text::before { content: '\201C'; color: var(--gold); margin-right: 2px; font-size: 16px; }
+  .feed-item.quote .body-text::after { content: '\201D'; color: var(--gold); margin-left: 2px; font-size: 16px; }
+
+  /* ── Auth Screens ── */
   .auth-screen {
-    min-height: 60vh;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
+  min-height: 65vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0;
+  }
+  .auth-logo-mark {
+  width: 56px; height: 56px;
+  margin-bottom: 20px;
   }
   .auth-card {
-    background: var(--panel);
-    border: 1px solid var(--panel-border);
-    border-radius: 12px;
-    padding: 24px 20px;
-    width: 100%;
-    max-width: 340px;
-    text-align: center;
+  background: var(--panel);
+  border: 1px solid var(--panel-border);
+  border-radius: 14px;
+  padding: 28px 24px;
+  width: 100%;
+  max-width: 360px;
+  text-align: center;
+  position: relative;
+  overflow: hidden;
   }
-  .auth-card h2 { font-size: 18px; font-weight: 800; margin: 0 0 4px; }
-  .auth-card p { font-size: 12.5px; color: var(--text-muted); margin: 0 0 16px; }
-  .auth-card .form-group { margin-bottom: 10px; text-align: left; }
-  .auth-error { color: #ef4444; font-size: 11.5px; margin-top: 6px; display: none; }
-  
-  .identity-selector { display: flex; flex-direction: column; gap: 8px; width: 100%; margin-top: 8px; }
+  .auth-card::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 3px;
+  background: linear-gradient(90deg, var(--marvel-red-dark), var(--marvel-red), var(--gold));
+  }
+  .auth-card::after {
+  content: '⬡';
+  position: absolute;
+  bottom: -10px; right: 10px;
+  font-size: 100px;
+  color: white;
+  opacity: 0.015;
+  pointer-events: none;
+  }
+  .auth-card h2 {
+  font-family: 'Rajdhani', sans-serif;
+  font-size: 22px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  margin: 0 0 6px;
+  color: var(--text-bright);
+  }
+  .auth-card p { font-size: 12.5px; color: var(--text-muted); margin: 0 0 20px; line-height: 1.5; }
+  .auth-card .form-group { margin-bottom: 12px; text-align: left; }
+  .auth-error {
+  color: #ff6b6f;
+  font-size: 11.5px;
+  margin-top: 8px;
+  display: none;
+  font-family: 'Rajdhani', sans-serif;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  }
+
+  .identity-selector { display: flex; flex-direction: column; gap: 10px; width: 100%; margin-top: 4px; }
   .identity-btn {
-    background: var(--panel-sub);
-    border: 1px solid var(--panel-border);
-    color: var(--text-bright);
-    padding: 12px;
-    border-radius: 8px;
-    font-size: 14px;
-    font-weight: 700;
-    cursor: pointer;
+  background: var(--panel-sub);
+  border: 1px solid var(--panel-border);
+  color: var(--text-bright);
+  padding: 13px;
+  border-radius: 8px;
+  font-family: 'Rajdhani', sans-serif;
+  font-size: 15px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: all 0.2s;
   }
-  .identity-btn.p-A:hover { border-color: var(--person-a); color: var(--person-a); }
-  .identity-btn.p-B:hover { border-color: var(--person-b); color: var(--person-b); }
-  .loading-spinner { color: var(--text-dim); font-size: 13px; text-align: center; padding: 50px 0; }
-</style>
+  .identity-btn.p-A:hover { border-color: var(--person-a); color: var(--person-a); background: var(--person-a-bg);
+  box-shadow: 0 0 16px rgba(237,29,36,0.2); }
+  .identity-btn.p-B:hover { border-color: var(--person-b); color: var(--person-b); background: var(--person-b-bg);
+  box-shadow: 0 0 16px rgba(245,200,66,0.15); }
+  </style>
 </head>
+
 <body>
 
-<div id="app">
-  <div class="loading-spinner">Loading bookshelf&hellip;</div>
-</div>
+  <div id="app">
+    <div class="loading-spinner">Assembling your bookshelf&hellip;</div>
+  </div>
 
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script>
-var SUPABASE_URL = 'https://eaowekwmtphxtsthzpyx.supabase.co';
-var SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVhb3dla3dtdHBoeHRzdGh6cHl4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODU0OTk3MTMsImV4cCI6MjEwMTA3NTcxM30.5-CNyY4M7pDHdPkWcAHgl0uYSpmwUy9P2qm5o3NvZfM';
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script>
+    var SUPABASE_URL = 'https://eaowekwmtphxtsthzpyx.supabase.co';
+    var SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVhb3dla3dtdHBoeHRzdGh6cHl4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODU0OTk3MTMsImV4cCI6MjEwMTA3NTcxM30.5-CNyY4M7pDHdPkWcAHgl0uYSpmwUy9P2qm5o3NvZfM';
 
-(function(){
-  var app = document.getElementById('app');
-  var DEMO = !SUPABASE_URL || SUPABASE_URL.indexOf('YOUR_SUPABASE') === 0;
-  var sb = null;
+    (function () {
+      var app = document.getElementById('app');
+      var DEMO = !SUPABASE_URL || SUPABASE_URL.indexOf('YOUR_SUPABASE') === 0;
+      var sb = null;
 
-  try {
-    if (!DEMO && window.supabase) {
-      sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-    }
-  } catch (e) {}
+      try {
+        if (!DEMO && window.supabase) {
+          sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+        }
+      } catch (e) { }
 
-  var storedUnlocked = localStorage.getItem('bca_unlocked') === 'true';
-  var storedMe = localStorage.getItem('bca_me') || null;
+      var storedUnlocked = localStorage.getItem('bca_unlocked') === 'true';
+      var storedMe = localStorage.getItem('bca_me') || null;
 
-  var state = {
-    config: null,
-    books: { A: null, B: null },
-    entries: [],
-    me: storedMe,
-    unlocked: storedUnlocked || DEMO,
-    connectionError: false
-  };
+      var state = {
+        config: null,
+        books: { A: null, B: null },
+        entries: [],
+        me: storedMe,
+        unlocked: storedUnlocked || DEMO,
+        connectionError: false
+      };
 
-  function esc(s){
-    var d = document.createElement('div');
-    d.textContent = s == null ? '' : String(s);
-    return d.innerHTML;
-  }
+      function esc(s) {
+        var d = document.createElement('div');
+        d.textContent = s == null ? '' : String(s);
+        return d.innerHTML;
+      }
 
-  function fmtDate(iso){
-    if (!iso) return '';
-    var d = new Date(iso);
-    var now = new Date();
-    if (d.toDateString() === now.toDateString()) {
-      return 'Today at ' + d.toLocaleTimeString([], {hour:'numeric', minute:'2-digit'});
-    }
-    var yest = new Date(now); yest.setDate(now.getDate() - 1);
-    if (d.toDateString() === yest.toDateString()) return 'Yesterday';
-    return d.toLocaleDateString([], {month:'short', day:'numeric'});
-  }
+      function fmtDate(iso) {
+        if (!iso) return '';
+        var d = new Date(iso);
+        var now = new Date();
+        if (d.toDateString() === now.toDateString()) {
+          return 'Today ' + d.toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' });
+        }
+        var yest = new Date(now); yest.setDate(now.getDate() - 1);
+        if (d.toDateString() === yest.toDateString()) return 'Yesterday';
+        return d.toLocaleDateString([], { month: 'short', day: 'numeric' });
+      }
 
-  function mapBooksRows(rows){
-    var books = { A:null, B:null };
-    (rows||[]).forEach(function(row){
-      books[row.person] = { title: row.title, author: row.author, page: row.page, total: row.total };
-    });
-    return books;
-  }
+      function mapBooksRows(rows) {
+        var books = { A: null, B: null };
+        (rows || []).forEach(function (row) {
+          books[row.person] = { title: row.title, author: row.author, page: row.page, total: row.total };
+        });
+        return books;
+      }
 
-  function mapEntryRow(row){
-    return { id: row.id, person: row.person, type: row.type, text: row.body, book: row.book, date: row.created_at };
-  }
+      function mapEntryRow(row) {
+        return { id: row.id, person: row.person, type: row.type, text: row.body, book: row.book, date: row.created_at };
+      }
 
-  function demoData(){
-    return {
-      config: { names: { A: 'Alex', B: 'Sam' } },
-      books: {
-        A: { title: 'Project Hail Mary', author: 'Andy Weir', page: 214, total: 476 },
-        B: { title: 'Piranesi', author: 'Susanna Clarke', page: 88, total: 245 }
-      },
-      entries: [
-        { id: 'd2', person: 'A', type: 'thought', text: 'The plot twist on chapter 14 blew my mind!', book: 'Project Hail Mary', date: new Date(Date.now()-7200e3).toISOString() },
-        { id: 'd1', person: 'B', type: 'thought', text: 'Starting this book tonight, love the writing.', book: 'Piranesi', date: new Date(Date.now()-86400e3).toISOString() }
-      ]
-    };
-  }
+      function demoData() {
+        return {
+          config: { names: { A: 'Alex', B: 'Sam' } },
+          books: {
+            A: { title: 'Project Hail Mary', author: 'Andy Weir', page: 214, total: 476 },
+            B: { title: 'Piranesi', author: 'Susanna Clarke', page: 88, total: 245 }
+          },
+          entries: [
+            { id: 'd2', person: 'A', type: 'thought', text: 'The plot twist on chapter 14 blew my mind!', book: 'Project Hail Mary', date: new Date(Date.now() - 7200e3).toISOString() },
+            { id: 'd1', person: 'B', type: 'quote', text: 'In the beginning, there was the House.', book: 'Piranesi', date: new Date(Date.now() - 86400e3).toISOString() }
+          ]
+        };
+      }
 
-  async function loadAll(){
-    if (DEMO || !sb){
-      var d = demoData();
-      state.config = d.config;
-      state.books = d.books;
-      state.entries = d.entries;
-      return;
-    }
+      async function loadAll() {
+        if (DEMO || !sb) {
+          var d = demoData();
+          state.config = d.config;
+          state.books = d.books;
+          state.entries = d.entries;
+          return;
+        }
+        try {
+          var cfgRes = await sb.from('shelf_config').select('id,name_a,name_b').eq('id', 1).maybeSingle();
+          if (cfgRes.error) throw cfgRes.error;
+          var cfg = cfgRes.data;
+          state.config = cfg ? { names: { A: cfg.name_a, B: cfg.name_b } } : null;
 
-    try {
-      var cfgRes = await sb.from('shelf_config').select('id,name_a,name_b').eq('id', 1).maybeSingle();
-      if (cfgRes.error) throw cfgRes.error;
-      var cfg = cfgRes.data;
-      state.config = cfg ? { names: { A: cfg.name_a, B: cfg.name_b } } : null;
-
-      var booksRes = await sb.from('shelf_books').select('*');
-      if (booksRes.error) throw booksRes.error;
-      state.books = mapBooksRows(booksRes.data);
-
-      var entriesRes = await sb.from('shelf_entries').select('*').order('created_at', { ascending: false }).limit(300);
-      if (entriesRes.error) throw entriesRes.error;
-      state.entries = (entriesRes.data || []).map(mapEntryRow);
-
-      state.connectionError = false;
-    } catch (err) {
-      console.warn("Live Supabase fetch error:", err);
-      state.connectionError = true;
-      var d = demoData();
-      if (!state.config) state.config = d.config;
-      if (!state.books.A && !state.books.B) state.books = d.books;
-      if (!state.entries.length) state.entries = d.entries;
-    }
-  }
-
-  async function saveConfigWithPassword(password){
-    if (DEMO || !sb) return { error: null };
-    try {
-      return await sb.rpc('set_shelf_password', {
-        new_password: password,
-        new_name_a: state.config.names.A,
-        new_name_b: state.config.names.B
-      });
-    } catch (e) {
-      return { error: e };
-    }
-  }
-
-  async function checkPassword(attempt){
-    if (DEMO || !sb) return true;
-    try {
-      var res = await sb.rpc('check_shelf_password', { attempt: attempt });
-      return !res.error && res.data === true;
-    } catch(e) {
-      return false;
-    }
-  }
-
-  async function saveBook(person){
-    if (DEMO || !sb) return;
-    try {
-      var b = state.books[person] || {};
-      await sb.from('shelf_books').upsert({
-        person: person,
-        title: b.title || null,
-        author: b.author || null,
-        page: (b.page == null ? null : b.page),
-        total: (b.total == null ? null : b.total),
-        updated_at: new Date().toISOString()
-      });
-    } catch(e) {}
-  }
-
-  function subscribeLive(){
-    if (DEMO || !sb) return;
-    try {
-      sb.channel('shelf-live')
-        .on('postgres_changes', { event: '*', schema: 'public', table: 'shelf_entries' }, async function(){
-          var entriesRes = await sb.from('shelf_entries').select('*').order('created_at', { ascending: false }).limit(300);
-          if (!entriesRes.error) {
-            state.entries = (entriesRes.data || []).map(mapEntryRow);
-            render();
-          }
-        })
-        .on('postgres_changes', { event: '*', schema: 'public', table: 'shelf_books' }, async function(){
           var booksRes = await sb.from('shelf_books').select('*');
-          if (!booksRes.error) {
-            state.books = mapBooksRows(booksRes.data);
-            render();
-          }
-        })
-        .subscribe();
-    } catch(e){}
-  }
+          if (booksRes.error) throw booksRes.error;
+          state.books = mapBooksRows(booksRes.data);
 
-  function render(){
-    if (!state.config || !state.config.names || !state.config.names.A || !state.config.names.B){
-      return renderSetupNames();
-    }
-    if (!state.unlocked){
-      return renderPasswordGate();
-    }
-    if (!state.me){
-      return renderPickIdentity();
-    }
-    return renderMain();
-  }
+          var entriesRes = await sb.from('shelf_entries').select('*').order('created_at', { ascending: false }).limit(300);
+          if (entriesRes.error) throw entriesRes.error;
+          state.entries = (entriesRes.data || []).map(mapEntryRow);
 
-  function syncBannerHtml(){
-    return state.connectionError ? '<div class="sync-banner">Could not connect to live database &mdash; check Supabase connection.</div>' : '';
-  }
+          state.connectionError = false;
+        } catch (err) {
+          console.warn("Live Supabase fetch error:", err);
+          state.connectionError = true;
+          var d = demoData();
+          if (!state.config) state.config = d.config;
+          if (!state.books.A && !state.books.B) state.books = d.books;
+          if (!state.entries.length) state.entries = d.entries;
+        }
+      }
 
-  function renderSetupNames(){
-    app.innerHTML = syncBannerHtml() +
-      '<div class="auth-screen">' +
-        '<div class="auth-card">' +
-          '<h2>Setup Book Tracker</h2>' +
-          '<p>Enter reader names and a shared password.</p>' +
-          '<div class="form-group"><label>First Reader</label><input id="nameA" placeholder="Name" maxlength="20"></div>' +
-          '<div class="form-group"><label>Second Reader</label><input id="nameB" placeholder="Name" maxlength="20"></div>' +
+      async function saveConfigWithPassword(password) {
+        if (DEMO || !sb) return { error: null };
+        try {
+          return await sb.rpc('set_shelf_password', {
+            new_password: password,
+            new_name_a: state.config.names.A,
+            new_name_b: state.config.names.B
+          });
+        } catch (e) { return { error: e }; }
+      }
+
+      async function checkPassword(attempt) {
+        if (DEMO || !sb) return true;
+        try {
+          var res = await sb.rpc('check_shelf_password', { attempt: attempt });
+          return !res.error && res.data === true;
+        } catch (e) { return false; }
+      }
+
+      async function saveBook(person) {
+        if (DEMO || !sb) return;
+        try {
+          var b = state.books[person] || {};
+          await sb.from('shelf_books').upsert({
+            person: person,
+            title: b.title || null,
+            author: b.author || null,
+            page: (b.page == null ? null : b.page),
+            total: (b.total == null ? null : b.total),
+            updated_at: new Date().toISOString()
+          });
+        } catch (e) { }
+      }
+
+      function subscribeLive() {
+        if (DEMO || !sb) return;
+        try {
+          sb.channel('shelf-live')
+            .on('postgres_changes', { event: '*', schema: 'public', table: 'shelf_entries' }, async function () {
+              var entriesRes = await sb.from('shelf_entries').select('*').order('created_at', { ascending: false }).limit(300);
+              if (!entriesRes.error) { state.entries = (entriesRes.data || []).map(mapEntryRow); render(); }
+            })
+            .on('postgres_changes', { event: '*', schema: 'public', table: 'shelf_books' }, async function () {
+              var booksRes = await sb.from('shelf_books').select('*');
+              if (!booksRes.error) { state.books = mapBooksRows(booksRes.data); render(); }
+            })
+            .subscribe();
+        } catch (e) { }
+      }
+
+      function render() {
+        if (!state.config || !state.config.names || !state.config.names.A || !state.config.names.B) return renderSetupNames();
+        if (!state.unlocked) return renderPasswordGate();
+        if (!state.me) return renderPickIdentity();
+        return renderMain();
+      }
+
+      function syncBannerHtml() {
+        return state.connectionError ? '<div class="sync-banner">&#9888; Could not connect to live database &mdash; check Supabase connection.</div>' : '';
+      }
+
+      /* Shield SVG used in headers */
+      var shieldSvg = '<svg viewBox="0 0 36 44" fill="none" xmlns="http://www.w3.org/2000/svg">' +
+        '<path d="M18 2 L34 9 L34 22 Q34 34 18 42 Q2 34 2 22 L2 9 Z" fill="#ED1D24" stroke="#b01419" stroke-width="1"/>' +
+        '<path d="M18 8 L29 13 L29 22 Q29 30 18 37 Q7 30 7 22 L7 13 Z" fill="#07080d"/>' +
+        '<text x="18" y="27" text-anchor="middle" font-family="Rajdhani,sans-serif" font-weight="700" font-size="11" fill="#ED1D24" letter-spacing="0">B</text>' +
+        '</svg>';
+
+      function renderSetupNames() {
+        app.innerHTML = syncBannerHtml() +
+          '<div class="auth-screen">' +
+          '<div class="auth-logo-mark">' + shieldSvg + '</div>' +
+          '<div class="auth-card">' +
+          '<h2>Assemble Your Shelf</h2>' +
+          '<p>Enter reader names and a shared password to begin.</p>' +
+          '<div class="form-group"><label>First Reader</label><input id="nameA" placeholder="Hero name" maxlength="20"></div>' +
+          '<div class="form-group"><label>Second Reader</label><input id="nameB" placeholder="Hero name" maxlength="20"></div>' +
           '<div class="form-group"><label>Shared Password</label><input id="pw1" type="password" placeholder="Password" maxlength="60"></div>' +
           '<div class="form-group"><label>Confirm Password</label><input id="pw2" type="password" placeholder="Confirm" maxlength="60"></div>' +
           '<p id="setupError" class="auth-error"></p>' +
-          '<button class="btn btn-primary" id="saveNames" style="width:100%;margin-top:8px;">Create Bookshelf</button>' +
-        '</div>' +
-      '</div>';
+          '<button class="btn btn-primary" id="saveNames" style="width:100%;margin-top:10px;">Assemble</button>' +
+          '</div>' +
+          '</div>';
 
-    document.getElementById('saveNames').onclick = async function(){
-      var a = document.getElementById('nameA').value.trim();
-      var b = document.getElementById('nameB').value.trim();
-      var pw1 = document.getElementById('pw1').value;
-      var pw2 = document.getElementById('pw2').value;
-      var errEl = document.getElementById('setupError');
-      if (!a || !b || !pw1){
-        errEl.textContent = 'Please fill out all fields.';
-        errEl.style.display = 'block';
-        return;
+        document.getElementById('saveNames').onclick = async function () {
+          var a = document.getElementById('nameA').value.trim();
+          var b = document.getElementById('nameB').value.trim();
+          var pw1 = document.getElementById('pw1').value;
+          var pw2 = document.getElementById('pw2').value;
+          var errEl = document.getElementById('setupError');
+          if (!a || !b || !pw1) { errEl.textContent = 'Please fill out all fields.'; errEl.style.display = 'block'; return; }
+          if (pw1 !== pw2) { errEl.textContent = 'Passwords do not match.'; errEl.style.display = 'block'; return; }
+          state.config = { names: { A: a, B: b } };
+          if (!state.books) state.books = { A: null, B: null };
+          await saveConfigWithPassword(pw1);
+          state.unlocked = true;
+          localStorage.setItem('bca_unlocked', 'true');
+          render();
+        };
       }
-      if (pw1 !== pw2){
-        errEl.textContent = 'Passwords do not match.';
-        errEl.style.display = 'block';
-        return;
-      }
-      state.config = { names: { A:a, B:b } };
-      if (!state.books) state.books = { A:null, B:null };
-      await saveConfigWithPassword(pw1);
-      
-      state.unlocked = true;
-      localStorage.setItem('bca_unlocked', 'true');
-      render();
-    };
-  }
 
-  function renderPasswordGate(){
-    var names = state.config.names;
-    app.innerHTML = syncBannerHtml() +
-      '<div class="auth-screen">' +
-        '<div class="auth-card">' +
+      function renderPasswordGate() {
+        var names = state.config.names;
+        app.innerHTML = syncBannerHtml() +
+          '<div class="auth-screen">' +
+          '<div class="auth-logo-mark">' + shieldSvg + '</div>' +
+          '<div class="auth-card">' +
           '<h2>Welcome Back</h2>' +
-          '<p>Enter password for ' + esc(names.A) + ' &amp; ' + esc(names.B) + '\u2019s shelf.</p>' +
-          '<div class="form-group"><label>Password</label><input id="gatePw" type="password" placeholder="Password" maxlength="60"></div>' +
+          '<p>' + esc(names.A) + ' &amp; ' + esc(names.B) + '\'s shelf awaits.</p>' +
+          '<div class="form-group"><label>Password</label><input id="gatePw" type="password" placeholder="Enter password" maxlength="60"></div>' +
           '<p id="gateError" class="auth-error"></p>' +
-          '<button class="btn btn-primary" id="unlockBtn" style="width:100%;margin-top:8px;">Unlock</button>' +
-        '</div>' +
-      '</div>';
+          '<button class="btn btn-primary" id="unlockBtn" style="width:100%;margin-top:10px;">Unlock Shelf</button>' +
+          '</div>' +
+          '</div>';
 
-    var pwInput = document.getElementById('gatePw');
-    var errEl = document.getElementById('gateError');
-    var unlockBtn = document.getElementById('unlockBtn');
+        var pwInput = document.getElementById('gatePw');
+        var errEl = document.getElementById('gateError');
+        var unlockBtn = document.getElementById('unlockBtn');
 
-    async function tryUnlock(){
-      var attempt = pwInput.value;
-      if (!attempt) return;
-      unlockBtn.disabled = true;
-      var ok = await checkPassword(attempt);
-      unlockBtn.disabled = false;
-      if (ok){
-        state.unlocked = true;
-        localStorage.setItem('bca_unlocked', 'true');
-        render();
-      } else {
-        errEl.textContent = 'Incorrect password.';
-        errEl.style.display = 'block';
+        async function tryUnlock() {
+          var attempt = pwInput.value;
+          if (!attempt) return;
+          unlockBtn.disabled = true;
+          unlockBtn.textContent = 'Verifying...';
+          var ok = await checkPassword(attempt);
+          unlockBtn.disabled = false;
+          unlockBtn.textContent = 'Unlock Shelf';
+          if (ok) {
+            state.unlocked = true;
+            localStorage.setItem('bca_unlocked', 'true');
+            render();
+          } else {
+            errEl.textContent = 'Incorrect password. Try again.';
+            errEl.style.display = 'block';
+            pwInput.value = '';
+            pwInput.focus();
+          }
+        }
+        unlockBtn.onclick = tryUnlock;
+        pwInput.addEventListener('keydown', function (e) { if (e.key === 'Enter') tryUnlock(); });
       }
-    }
-    unlockBtn.onclick = tryUnlock;
-    pwInput.addEventListener('keydown', function(e){ if (e.key === 'Enter') tryUnlock(); });
-  }
 
-  function renderPickIdentity(){
-    var names = state.config.names;
-    app.innerHTML = syncBannerHtml() +
-      '<div class="auth-screen">' +
-        '<div class="auth-card">' +
-          '<h2>Select Profile</h2>' +
+      function renderPickIdentity() {
+        var names = state.config.names;
+        app.innerHTML = syncBannerHtml() +
+          '<div class="auth-screen">' +
+          '<div class="auth-logo-mark">' + shieldSvg + '</div>' +
+          '<div class="auth-card">' +
+          '<h2>Choose Your Hero</h2>' +
           '<p>Which reader are you?</p>' +
           '<div class="identity-selector">' +
-            '<button class="identity-btn p-A" data-p="A">' + esc(names.A) + '</button>' +
-            '<button class="identity-btn p-B" data-p="B">' + esc(names.B) + '</button>' +
+          '<button class="identity-btn p-A" data-p="A">' + esc(names.A) + '</button>' +
+          '<button class="identity-btn p-B" data-p="B">' + esc(names.B) + '</button>' +
           '</div>' +
-        '</div>' +
-      '</div>';
-
-    Array.prototype.forEach.call(app.querySelectorAll('.identity-selector button'), function(btn){
-      btn.onclick = function(){
-        state.me = btn.getAttribute('data-p');
-        localStorage.setItem('bca_me', state.me);
-        render();
-      };
-    });
-  }
-
-  var editingPerson = null;
-  var editingFullInfo = null;
-  var composeType = 'thought';
-
-  function renderMain(){
-    var names = state.config.names;
-    var mePerson = state.me;
-    var myName = names[mePerson];
-
-    var html = '';
-    html += syncBannerHtml();
-    html += '<header class="top">';
-    html += '<h1>BOOK CLUB</h1>';
-    html += '<div class="sub">' + esc(names.A) + ' &amp; ' + esc(names.B) + '</div>';
-    html += '<div class="header-actions">';
-    html += '<button class="link-btn" id="switchProfile">Profile (' + esc(myName) + ')</button>';
-    html += '<button class="link-btn" id="lockShelf">Lock</button>';
-    html += '</div>';
-    html += '</header>';
-
-    html += '<section>';
-    html += '<h2 class="section-title">Currently Reading</h2>';
-    html += '<div class="shelf">';
-    html += bookCardHtml('A', names.A);
-    html += bookCardHtml('B', names.B);
-    html += '</div></section>';
-
-    html += '<section>';
-    html += '<h2 class="section-title">Log Note</h2>';
-    html += composeHtml(mePerson, names);
-    html += '</section>';
-
-    html += '<section>';
-    html += '<h2 class="section-title">Stream</h2>';
-    html += feedHtml(names);
-    html += '</section>';
-
-    app.innerHTML = html;
-    bindMain(names, mePerson);
-  }
-
-  function bookCardHtml(person, name){
-    var book = state.books[person];
-    var pClass = 'person-' + person;
-    var isEditingPage = editingPerson === person;
-    var isEditingFull = editingFullInfo === person;
-
-    if (isEditingFull || (!book || !book.title)){
-      var b = book || {};
-      return '' +
-      '<div class="book-card ' + pClass + '">' +
-        '<div class="reader-badge">' + esc(name) + '</div>' +
-        '<div class="edit-form-panel">' +
-          '<div class="form-group">' +
-            '<label>Book Title</label>' +
-            '<input type="text" id="edit-title-' + person + '" placeholder="Title" value="' + esc(b.title||'') + '">' +
           '</div>' +
-          '<div class="form-group">' +
-            '<label>Author</label>' +
-            '<input type="text" id="edit-author-' + person + '" placeholder="Author" value="' + esc(b.author||'') + '">' +
-          '</div>' +
-          '<div class="form-row">' +
-            '<div class="form-group">' +
-              '<label>Current Page</label>' +
-              '<input type="number" min="0" id="edit-page-' + person + '" placeholder="0" value="' + (b.page!=null? b.page:'') + '">' +
+          '</div>';
+
+        Array.prototype.forEach.call(app.querySelectorAll('.identity-selector button'), function (btn) {
+          btn.onclick = function () {
+            state.me = btn.getAttribute('data-p');
+            localStorage.setItem('bca_me', state.me);
+            render();
+          };
+        });
+      }
+
+      var editingPerson = null;
+      var editingFullInfo = null;
+      var composeType = 'thought';
+
+      function renderMain() {
+        var names = state.config.names;
+        var mePerson = state.me;
+        var myName = names[mePerson];
+
+        var html = '';
+        html += syncBannerHtml();
+
+        /* Header with shield logo */
+        html += '<header class="top">';
+        html += '<div class="header-logo">';
+        html += '<div class="logo-shield">' + shieldSvg + '</div>';
+        html += '<h1>Book Club Assemble</h1>';
+        html += '</div>';
+        html += '<div class="sub">' + esc(names.A) + ' &nbsp;&bull;&nbsp; ' + esc(names.B) + '</div>';
+        html += '<div class="header-actions">';
+        html += '<button class="link-btn" id="switchProfile">&#128100; ' + esc(myName) + '</button>';
+        html += '<button class="link-btn" id="lockShelf">&#128274; Lock</button>';
+        html += '</div>';
+        html += '</header>';
+
+        html += '<section>';
+        html += '<h2 class="section-title">Currently Reading</h2>';
+        html += '<div class="shelf">';
+        html += bookCardHtml('A', names.A);
+        html += bookCardHtml('B', names.B);
+        html += '</div></section>';
+
+        html += '<section>';
+        html += '<h2 class="section-title">Log Note</h2>';
+        html += composeHtml(mePerson, names);
+        html += '</section>';
+
+        html += '<section>';
+        html += '<h2 class="section-title">Mission Log</h2>';
+        html += feedHtml(names);
+        html += '</section>';
+
+        app.innerHTML = html;
+        bindMain(names, mePerson);
+      }
+
+      function bookCardHtml(person, name) {
+        var book = state.books[person];
+        var pClass = 'person-' + person;
+        var isEditingPage = editingPerson === person;
+        var isEditingFull = editingFullInfo === person;
+
+        if (isEditingFull || (!book || !book.title)) {
+          var b = book || {};
+          return '<div class="book-card ' + pClass + '">' +
+            '<div class="reader-badge">' + esc(name) + '</div>' +
+            '<div class="edit-form-panel">' +
+            '<div class="form-group"><label>Book Title</label>' +
+            '<input type="text" id="edit-title-' + person + '" placeholder="Title" value="' + esc(b.title || '') + '"></div>' +
+            '<div class="form-group"><label>Author</label>' +
+            '<input type="text" id="edit-author-' + person + '" placeholder="Author" value="' + esc(b.author || '') + '"></div>' +
+            '<div class="form-row">' +
+            '<div class="form-group"><label>Current Page</label>' +
+            '<input type="number" min="0" id="edit-page-' + person + '" placeholder="0" value="' + (b.page != null ? b.page : '') + '"></div>' +
+            '<div class="form-group"><label>Total Pages</label>' +
+            '<input type="number" min="1" id="edit-total-' + person + '" placeholder="Total" value="' + (b.total != null ? b.total : '') + '"></div>' +
             '</div>' +
-            '<div class="form-group">' +
-              '<label>Total Pages</label>' +
-              '<input type="number" min="1" id="edit-total-' + person + '" placeholder="Total" value="' + (b.total!=null? b.total:'') + '">' +
-            '</div>' +
-          '</div>' +
-          '<div class="action-buttons">' +
+            '<div class="action-buttons">' +
             '<button class="btn btn-primary" data-save-full="' + person + '">Save Book</button>' +
             (book && book.title ? '<button class="btn btn-secondary" data-cancel-full="' + person + '">Cancel</button>' : '') +
-          '</div>' +
-        '</div>' +
-      '</div>';
-    }
+            '</div>' +
+            '</div>' +
+            '</div>';
+        }
 
-    if (isEditingPage){
-      return '' +
-      '<div class="book-card ' + pClass + '">' +
-        '<div>' +
+        if (isEditingPage) {
+          return '<div class="book-card ' + pClass + '">' +
+            '<div>' +
+            '<div class="reader-badge">' + esc(name) + '</div>' +
+            '<h3>' + esc(book.title) + '</h3>' +
+            '<div class="author">' + esc(book.author || '') + '</div>' +
+            '</div>' +
+            '<div class="edit-form-panel" style="margin-top:12px;">' +
+            '<div class="form-row">' +
+            '<div class="form-group" style="flex:1;"><label>Current Page</label>' +
+            '<input type="number" min="0" id="quick-page-' + person + '" value="' + (book.page != null ? book.page : '0') + '" autofocus></div>' +
+            '<div class="form-group" style="flex:1;"><label>Total Pages</label>' +
+            '<input type="number" min="1" id="quick-total-' + person + '" value="' + (book.total || '100') + '"></div>' +
+            '</div>' +
+            '<div class="action-buttons">' +
+            '<button class="btn btn-primary" data-save-page="' + person + '">Update</button>' +
+            '<button class="btn btn-secondary" data-cancel-page="' + person + '">Cancel</button>' +
+            '</div>' +
+            '</div>' +
+            '</div>';
+        }
+
+        var pct = calcPct(book.page, book.total);
+        var hasProgress = book.page != null && book.total;
+
+        return '<div class="book-card ' + pClass + '">' +
+          '<div>' +
           '<div class="reader-badge">' + esc(name) + '</div>' +
           '<h3>' + esc(book.title) + '</h3>' +
-          '<div class="author">' + esc(book.author||'') + '</div>' +
-        '</div>' +
-        '<div class="edit-form-panel" style="margin-top:10px;">' +
-          '<div class="form-row">' +
-            '<div class="form-group" style="flex:1;">' +
-              '<label>Current Page</label>' +
-              '<input type="number" min="0" id="quick-page-' + person + '" value="' + (book.page!=null? book.page:'0') + '" autofocus>' +
-            '</div>' +
-            '<div class="form-group" style="flex:1;">' +
-              '<label>Total Pages</label>' +
-              '<input type="number" min="1" id="quick-total-' + person + '" value="' + (book.total||'100') + '">' +
-            '</div>' +
+          (book.author ? '<div class="author">' + esc(book.author) + '</div>' : '<div class="author">&nbsp;</div>') +
           '</div>' +
-          '<div class="action-buttons">' +
-            '<button class="btn btn-primary" data-save-page="' + person + '">Update Page</button>' +
-            '<button class="btn btn-secondary" data-cancel-page="' + person + '">Cancel</button>' +
-          '</div>' +
-        '</div>' +
-      '</div>';
-    }
-
-    var pct = calcPct(book.page, book.total);
-    var hasProgress = book.page != null && book.total;
-
-    return '' +
-    '<div class="book-card ' + pClass + '">' +
-      '<div>' +
-        '<div class="reader-badge">' + esc(name) + '</div>' +
-        '<h3>' + esc(book.title) + '</h3>' +
-        (book.author ? '<div class="author">' + esc(book.author) + '</div>' : '<div class="author">&nbsp;</div>') +
-      '</div>' +
-      '<div>' +
-        '<div class="progress-header">' +
+          '<div>' +
+          '<div class="progress-header">' +
           '<div class="pages">' +
-            (hasProgress
-              ? 'Page <strong>' + book.page + '</strong> of <strong>' + book.total + '</strong>'
-              : 'No progress logged') +
+          (hasProgress ? 'Page <strong>' + book.page + '</strong> of <strong>' + book.total + '</strong>' : 'No progress logged') +
           '</div>' +
           '<div class="percentage mono">' + pct + '%</div>' +
-        '</div>' +
-        '<div class="meter-bar">' +
-          '<div class="meter-fill" style="width:' + pct + '%"></div>' +
-        '</div>' +
-        '<button class="btn-update" data-edit-page="' + person + '">Update Page</button>' +
-        '<div class="card-footer-links">' +
-          '<button class="sub-link" data-edit-full="' + person + '">Edit title / total pages</button>' +
-        '</div>' +
-      '</div>' +
-    '</div>';
-  }
+          '</div>' +
+          '<div class="meter-bar"><div class="meter-fill" style="width:' + pct + '%"></div></div>' +
+          '<button class="btn-update" data-edit-page="' + person + '">Update Page</button>' +
+          '<div class="card-footer-links">' +
+          '<button class="sub-link" data-edit-full="' + person + '">Edit book info</button>' +
+          '</div>' +
+          '</div>' +
+          '</div>';
+      }
 
-  function calcPct(page, total){
-    if (!page || !total || total <= 0) return 0;
-    var pct = Math.round((page / total) * 100);
-    if (pct < 0) return 0;
-    if (pct > 100) return 100;
-    return pct;
-  }
+      function calcPct(page, total) {
+        if (!page || !total || total <= 0) return 0;
+        var pct = Math.round((page / total) * 100);
+        return Math.max(0, Math.min(100, pct));
+      }
 
-  function composeHtml(mePerson, names){
-    var book = state.books[mePerson];
-    var tag = book && book.title ? book.title : 'No active book';
+      function composeHtml(mePerson, names) {
+        var book = state.books[mePerson];
+        var tag = book && book.title ? book.title : 'No active book';
+        return '<div class="compose-card">' +
+          '<div class="compose-header">' +
+          '<div class="type-selector">' +
+          '<button class="' + (composeType === 'thought' ? 'active' : '') + '" data-type="thought">Thought</button>' +
+          '<button class="' + (composeType === 'quote' ? 'active' : '') + '" data-type="quote">Quote</button>' +
+          '</div>' +
+          '<div class="book-tag">' + esc(tag) + '</div>' +
+          '</div>' +
+          '<textarea id="composeText" placeholder="' + (composeType === 'quote' ? 'A passage worth remembering...' : 'Share a thought...') + '"></textarea>' +
+          '<div style="text-align:right;">' +
+          '<button class="btn btn-primary" id="submitEntry" style="padding:8px 20px;">Post</button>' +
+          '</div>' +
+          '</div>';
+      }
 
-    return '' +
-    '<div class="compose-card">' +
-      '<div class="compose-header">' +
-        '<div class="type-selector">' +
-          '<button class="' + (composeType==='thought' ? 'active' : '') + '" data-type="thought">Thought</button>' +
-          '<button class="' + (composeType==='quote' ? 'active' : '') + '" data-type="quote">Quote</button>' +
-        '</div>' +
-        '<div class="book-tag">' + esc(tag) + '</div>' +
-      '</div>' +
-      '<textarea id="composeText" placeholder="' + (composeType==='quote' ? 'Quote...' : 'Thought...') + '"></textarea>' +
-      '<div style="text-align:right;">' +
-        '<button class="btn btn-primary" id="submitEntry" style="padding:6px 16px;">Post</button>' +
-      '</div>' +
-    '</div>';
-  }
-
-  function feedHtml(names){
-    if (!state.entries || !state.entries.length){
-      return '<div class="feed-empty">No updates posted yet.</div>';
-    }
-    var sorted = state.entries.slice().sort(function(a,b){ return new Date(b.date) - new Date(a.date); });
-    var out = '<div class="feed-list">';
-    sorted.forEach(function(e){
-      var pClass = 'person-' + e.person;
-      var name = names[e.person] || e.person;
-      out += '' +
-      '<div class="feed-item ' + (e.type==='quote'?'quote ':'') + pClass + '">' +
-        '<div class="item-meta">' +
-          '<div>' +
+      function feedHtml(names) {
+        if (!state.entries || !state.entries.length) {
+          return '<div class="feed-empty">&#9670; No entries yet &mdash; be the first to log one</div>';
+        }
+        var sorted = state.entries.slice().sort(function (a, b) { return new Date(b.date) - new Date(a.date); });
+        var out = '<div class="feed-list">';
+        sorted.forEach(function (e) {
+          var pClass = 'person-' + e.person;
+          var name = names[e.person] || e.person;
+          out += '<div class="feed-item ' + (e.type === 'quote' ? 'quote ' : '') + pClass + '">' +
+            '<div class="item-meta">' +
+            '<div>' +
             '<span class="reader-name">' + esc(name) + '</span>' +
             (e.book ? ' &bull; <span class="book-name">' + esc(e.book) + '</span>' : '') +
-          '</div>' +
-          '<span class="date-str mono">' + esc(fmtDate(e.date)) + '</span>' +
-        '</div>' +
-        '<p class="body-text">' + esc(e.text) + '</p>' +
-      '</div>';
-    });
-    out += '</div>';
-    return out;
-  }
-
-  function bindMain(names, mePerson){
-    var switchBtn = document.getElementById('switchProfile');
-    if (switchBtn) switchBtn.onclick = function(){
-      state.me = null;
-      localStorage.removeItem('bca_me');
-      render();
-    };
-
-    var lockBtn = document.getElementById('lockShelf');
-    if (lockBtn) lockBtn.onclick = function(){
-      state.unlocked = false;
-      localStorage.removeItem('bca_unlocked');
-      render();
-    };
-
-    Array.prototype.forEach.call(app.querySelectorAll('[data-edit-page]'), function(btn){
-      btn.onclick = function(){ editingPerson = btn.getAttribute('data-edit-page'); editingFullInfo = null; render(); };
-    });
-    Array.prototype.forEach.call(app.querySelectorAll('[data-edit-full]'), function(btn){
-      btn.onclick = function(){ editingFullInfo = btn.getAttribute('data-edit-full'); editingPerson = null; render(); };
-    });
-    Array.prototype.forEach.call(app.querySelectorAll('[data-cancel-page]'), function(btn){
-      btn.onclick = function(){ editingPerson = null; render(); };
-    });
-    Array.prototype.forEach.call(app.querySelectorAll('[data-cancel-full]'), function(btn){
-      btn.onclick = function(){ editingFullInfo = null; render(); };
-    });
-
-    Array.prototype.forEach.call(app.querySelectorAll('[data-save-page]'), function(btn){
-      btn.onclick = async function(){
-        var p = btn.getAttribute('data-save-page');
-        var pageVal = document.getElementById('quick-page-'+p).value;
-        var totalVal = document.getElementById('quick-total-'+p).value;
-        var currentBook = state.books[p] || {};
-
-        state.books[p] = {
-          title: currentBook.title || 'Untitled',
-          author: currentBook.author || '',
-          page: pageVal === '' ? null : parseInt(pageVal,10),
-          total: totalVal === '' ? null : parseInt(totalVal,10)
-        };
-        editingPerson = null;
-        render();
-        await saveBook(p);
-      };
-    });
-
-    Array.prototype.forEach.call(app.querySelectorAll('[data-save-full]'), function(btn){
-      btn.onclick = async function(){
-        var p = btn.getAttribute('data-save-full');
-        var title = document.getElementById('edit-title-'+p).value.trim();
-        var author = document.getElementById('edit-author-'+p).value.trim();
-        var page = document.getElementById('edit-page-'+p).value;
-        var total = document.getElementById('edit-total-'+p).value;
-
-        state.books[p] = {
-          title: title,
-          author: author,
-          page: page === '' ? null : parseInt(page,10),
-          total: total === '' ? null : parseInt(total,10)
-        };
-        editingFullInfo = null;
-        render();
-        await saveBook(p);
-      };
-    });
-
-    Array.prototype.forEach.call(app.querySelectorAll('[data-type]'), function(btn){
-      btn.onclick = function(){ composeType = btn.getAttribute('data-type'); render(); };
-    });
-
-    var submitBtn = document.getElementById('submitEntry');
-    if (submitBtn) submitBtn.onclick = async function(){
-      var ta = document.getElementById('composeText');
-      var text = ta.value.trim();
-      if (!text) return;
-      var book = state.books[mePerson];
-
-      submitBtn.disabled = true;
-
-      if (DEMO || !sb){
-        state.entries.unshift({
-          id: 'local-' + Date.now(),
-          person: mePerson,
-          type: composeType,
-          text: text,
-          book: book && book.title ? book.title : null,
-          date: new Date().toISOString()
+            '</div>' +
+            '<span class="date-str mono">' + esc(fmtDate(e.date)) + '</span>' +
+            '</div>' +
+            '<p class="body-text">' + esc(e.text) + '</p>' +
+            '</div>';
         });
-        submitBtn.disabled = false;
-        render();
-        return;
+        out += '</div>';
+        return out;
       }
 
-      try {
-        var res = await sb.from('shelf_entries').insert({
-          person: mePerson,
-          type: composeType,
-          body: text,
-          book: book && book.title ? book.title : null
-        }).select().single();
+      function bindMain(names, mePerson) {
+        var switchBtn = document.getElementById('switchProfile');
+        if (switchBtn) switchBtn.onclick = function () { state.me = null; localStorage.removeItem('bca_me'); render(); };
 
-        submitBtn.disabled = false;
-        if (!res.error && res.data){
-          state.entries.unshift(mapEntryRow(res.data));
-          render();
-        }
-      } catch(e) {
-        submitBtn.disabled = false;
+        var lockBtn = document.getElementById('lockShelf');
+        if (lockBtn) lockBtn.onclick = function () { state.unlocked = false; localStorage.removeItem('bca_unlocked'); render(); };
+
+        Array.prototype.forEach.call(app.querySelectorAll('[data-edit-page]'), function (btn) {
+          btn.onclick = function () { editingPerson = btn.getAttribute('data-edit-page'); editingFullInfo = null; render(); };
+        });
+        Array.prototype.forEach.call(app.querySelectorAll('[data-edit-full]'), function (btn) {
+          btn.onclick = function () { editingFullInfo = btn.getAttribute('data-edit-full'); editingPerson = null; render(); };
+        });
+        Array.prototype.forEach.call(app.querySelectorAll('[data-cancel-page]'), function (btn) {
+          btn.onclick = function () { editingPerson = null; render(); };
+        });
+        Array.prototype.forEach.call(app.querySelectorAll('[data-cancel-full]'), function (btn) {
+          btn.onclick = function () { editingFullInfo = null; render(); };
+        });
+
+        Array.prototype.forEach.call(app.querySelectorAll('[data-save-page]'), function (btn) {
+          btn.onclick = async function () {
+            var p = btn.getAttribute('data-save-page');
+            var pageVal = document.getElementById('quick-page-' + p).value;
+            var totalVal = document.getElementById('quick-total-' + p).value;
+            var currentBook = state.books[p] || {};
+            state.books[p] = {
+              title: currentBook.title || 'Untitled',
+              author: currentBook.author || '',
+              page: pageVal === '' ? null : parseInt(pageVal, 10),
+              total: totalVal === '' ? null : parseInt(totalVal, 10)
+            };
+            editingPerson = null;
+            render();
+            await saveBook(p);
+          };
+        });
+
+        Array.prototype.forEach.call(app.querySelectorAll('[data-save-full]'), function (btn) {
+          btn.onclick = async function () {
+            var p = btn.getAttribute('data-save-full');
+            var title = document.getElementById('edit-title-' + p).value.trim();
+            var author = document.getElementById('edit-author-' + p).value.trim();
+            var page = document.getElementById('edit-page-' + p).value;
+            var total = document.getElementById('edit-total-' + p).value;
+            state.books[p] = {
+              title: title,
+              author: author,
+              page: page === '' ? null : parseInt(page, 10),
+              total: total === '' ? null : parseInt(total, 10)
+            };
+            editingFullInfo = null;
+            render();
+            await saveBook(p);
+          };
+        });
+
+        Array.prototype.forEach.call(app.querySelectorAll('[data-type]'), function (btn) {
+          btn.onclick = function () { composeType = btn.getAttribute('data-type'); render(); };
+        });
+
+        var submitBtn = document.getElementById('submitEntry');
+        if (submitBtn) submitBtn.onclick = async function () {
+          var ta = document.getElementById('composeText');
+          var text = ta.value.trim();
+          if (!text) return;
+          var book = state.books[mePerson];
+          submitBtn.disabled = true;
+          submitBtn.textContent = '...';
+
+          if (DEMO || !sb) {
+            state.entries.unshift({
+              id: 'local-' + Date.now(),
+              person: mePerson,
+              type: composeType,
+              text: text,
+              book: book && book.title ? book.title : null,
+              date: new Date().toISOString()
+            });
+            submitBtn.disabled = false;
+            render();
+            return;
+          }
+
+          try {
+            var res = await sb.from('shelf_entries').insert({
+              person: mePerson,
+              type: composeType,
+              body: text,
+              book: book && book.title ? book.title : null
+            }).select().single();
+
+            submitBtn.disabled = false;
+            if (!res.error && res.data) {
+              state.entries.unshift(mapEntryRow(res.data));
+              render();
+            }
+          } catch (e) {
+            submitBtn.disabled = false;
+            submitBtn.textContent = 'Post';
+          }
+        };
       }
-    };
-  }
 
-  loadAll().then(function(){
-    render();
-    subscribeLive();
-  }).catch(function(e){
-    render();
-  });
-})();
-</script>
+      loadAll().then(function () { render(); subscribeLive(); }).catch(function () { render(); });
+    })();
+  </script>
 </body>
+
 </html>
